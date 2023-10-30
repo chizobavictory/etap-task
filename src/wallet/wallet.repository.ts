@@ -1,6 +1,6 @@
 import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
-import { Wallet } from './entities/wallet.entity';
+import { Wallet } from './wallet.entity';
 
 export class WalletRepository extends Repository<Wallet> {
   async createWalletForUser(

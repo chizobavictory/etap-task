@@ -32,7 +32,7 @@ export class WalletService {
     );
   }
 
-  async creditWallet(id: number, amount: number) {
+  async creditWallet(id, amount: number) {
     const wallet = await this.walletRepository.findOne(id);
 
     if (!wallet) {
@@ -43,8 +43,8 @@ export class WalletService {
   }
 
   async transferFunds(
-    senderWalletId: number,
-    receiverWalletId: number,
+    senderWalletId,
+    receiverWalletId,
     amount: number,
     adminUser: User,
   ) {
