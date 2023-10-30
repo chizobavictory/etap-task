@@ -23,7 +23,8 @@ export class UserService {
     }
 
     // Hash the password before storing it in the database
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     const newUser = this.userRepository.create({
       phoneNumber,
