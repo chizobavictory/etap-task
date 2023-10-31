@@ -6,11 +6,14 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column()
+  password: string;
+
   @Column({ unique: true })
   phoneNumber: string;
 
   @Column()
-  password: string;
+  fullName: string | null;
 
   @Column({ default: false })
   isAdmin: boolean;

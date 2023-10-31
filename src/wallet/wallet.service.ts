@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { User } from 'src/user/user.entity';
 import { Wallet } from './wallet.entity';
 import { Repository } from 'typeorm';
@@ -48,6 +52,7 @@ export class WalletService {
     }
 
     wallet.balance += amount;
+
     return this.walletRepository.save(wallet);
   }
 
@@ -56,6 +61,7 @@ export class WalletService {
     receiverWalletId: number,
     amount: number,
     adminUser: User,
+    paystackRecipientCode: string,
   ) {
     const senderWallet = await this.walletRepository.findOne({
       where: { id: senderWalletId },
@@ -79,21 +85,26 @@ export class WalletService {
       throw new Error('Large transfers require admin approval.');
     }
 
-    return this.transferFundsData(senderWallet, receiverWallet, amount);
-  }
-
-  async transferFundsData(
-    senderWallet: Wallet,
-    receiverWallet: Wallet,
-    amount: number,
-  ): Promise<[Wallet, Wallet]> {
     if (senderWallet.balance >= amount) {
       senderWallet.balance -= amount;
+
+      // Paystack transfer logic goes here
+      const response = await this.paystackTransfer(
+        amount,
+        paystackRecipientCode,
+      );
+
+      if (!response.status) {
+        throw new BadRequestException(response.message);
+      }
+
       receiverWallet.balance += amount;
       await this.walletRepository.save([senderWallet, receiverWallet]); // Save the changes
       return [senderWallet, receiverWallet];
     } else {
-      throw new Error("Insufficient funds in the sender's wallet.");
+      throw new BadRequestException(
+        "Insufficient funds in the sender's wallet.",
+      );
     }
   }
 
@@ -127,5 +138,59 @@ export class WalletService {
       }
     }
     return false;
+  }
+
+  async paystackTransfer(amount: number, recipient: string) {
+    // Paystack transfer logic goes here
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+    };
+
+    const data = {
+      source: 'balance',
+      amount: amount * 100,
+      recipient: recipient,
+    };
+
+    const response = await fetch('https://api.paystack.co/transfer', {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(data),
+    });
+
+    const json = await response.json();
+
+    return json;
+  }
+
+  async createTransferRecipient(
+    bankCode: string,
+    fullName: string,
+    account_number: string,
+  ): Promise<string> {
+    // Create a transfer recipient using the Paystack transfer recipient API
+
+    const headers = {
+      Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+      'Content-Type': 'application/json',
+    };
+
+    const data = {
+      type: 'nuban',
+      name: fullName,
+      account_number,
+      bank_code: bankCode,
+    };
+
+    const response = await fetch('https://api.paystack.co/transferrecipient', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(data),
+    });
+
+    const json = await response.json();
+
+    return json.data.recipient_code ?? null;
   }
 }

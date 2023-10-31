@@ -12,10 +12,10 @@ export class UserService {
     private userRepository: Repository<User>,
   ) {}
 
-  async createUser(phoneNumber: string, password: string): Promise<User> {
+  async createUser(user: any): Promise<User> {
     // Check if a user with the same phone number already exists
     const existingUser = await this.userRepository.findOne({
-      where: { phoneNumber },
+      where: { phoneNumber: user.phoneNumber },
     });
 
     if (existingUser) {
@@ -24,10 +24,10 @@ export class UserService {
 
     // Hash the password before storing it in the database
     const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const hashedPassword = await bcrypt.hash(user.password, saltRounds);
 
     const newUser = this.userRepository.create({
-      phoneNumber,
+      phoneNumber: user.phoneNumber,
       password: hashedPassword,
     });
 

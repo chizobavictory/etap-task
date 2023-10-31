@@ -6,6 +6,7 @@ import {
   Param,
   Body,
   UseGuards,
+  Put,
 } from '@nestjs/common';
 import { WalletService } from './wallet.service';
 import { AdminAuthGuard } from 'src/admin-auth/admin-auth.guard';
@@ -27,6 +28,22 @@ export class WalletController {
       createWalletDto.initialBalance,
     );
   }
+  @Put('transfer/:senderId/:receiverId')
+  @UseGuards(UserAuthGuard) // Protect this route for authenticated users
+  transferFunds(
+    @Param('senderId') senderId: string,
+    @Param('receiverId') receiverId: string,
+    @Body() updateWalletDto: UpdateWalletDto,
+    @Body() adminUser: User,
+  ) {
+    return this.walletService.transferFunds(
+      +senderId,
+      +receiverId,
+      updateWalletDto.amount,
+      adminUser,
+  
+    );
+  }
 
   @Get(':id')
   @UseGuards(UserAuthGuard) // Protect this route for authenticated users
@@ -40,23 +57,7 @@ export class WalletController {
     @Param('id') id: string,
     @Body() updateWalletDto: UpdateWalletDto,
   ) {
-    return this.walletService.creditWallet(+id, updateWalletDto.amount);
-  }
-
-  @Patch('transfer/:senderId/:receiverId')
-  @UseGuards(UserAuthGuard) // Protect this route for authenticated users
-  transferFunds(
-    @Param('senderId') senderId: string,
-    @Param('receiverId') receiverId: string,
-    @Body() updateWalletDto: UpdateWalletDto,
-    @Body() adminUser: User,
-  ) {
-    return this.walletService.transferFunds(
-      +senderId,
-      +receiverId,
-      updateWalletDto.amount,
-      adminUser,
-    );
+    return this.walletService.creditWallet(+id, +updateWalletDto.amount);
   }
 
   @Get('approve-transfer/:senderId/:amount')

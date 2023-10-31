@@ -9,6 +9,12 @@ export class CreateWalletDto {
   @IsNotEmpty()
   currency: string;
 
+  @IsString()
+  accountNumber: string | null;
+
+  @IsString()
+  bankCode: string | null;
+
   @IsNumber()
   @IsPositive()
   initialBalance: number;

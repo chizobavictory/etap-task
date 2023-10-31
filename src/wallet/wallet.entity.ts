@@ -19,6 +19,15 @@ export class Wallet {
   @Column({ default: 0 })
   balance: number; // Initial balance
 
+  @Column()
+  paystackRecipientCode: string;
+
+  @Column()
+  accountNumber: string;
+
+  @Column()
+  bankCode: string;
+
   @ManyToOne(() => User, (user) => user.wallets) // Use ManyToOne for a single user relationship
   user: User;
 }
