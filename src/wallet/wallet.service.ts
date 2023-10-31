@@ -72,6 +72,13 @@ export class WalletService {
       throw new NotFoundException('Wallet not found.');
     }
 
+    const res = await this.paystackTransfer(
+      amount,
+      wallet.paystackRecipientCode,
+    );
+
+    console.log('res: ', res);
+
     wallet.balance += amount;
 
     return this.walletRepository.save(wallet);
