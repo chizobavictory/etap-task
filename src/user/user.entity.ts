@@ -13,7 +13,7 @@ export class User {
   phoneNumber: string;
 
   @Column()
-  fullName: string | null;
+  fullName: string;
 
   @Column({ default: false })
   isAdmin: boolean;

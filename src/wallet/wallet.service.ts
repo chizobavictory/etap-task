@@ -15,11 +15,20 @@ export class WalletService {
     private readonly walletRepository: Repository<Wallet>,
   ) {}
 
-  async createWalletForUser(
-    user: User,
-    currency: string,
-    initialBalance: number,
-  ) {
+  async createWalletForUser({
+    user,
+    currency,
+    initialBalance,
+    accountNumber,
+    bankCode,
+  }: {
+    user: User;
+    currency: string;
+    initialBalance: number;
+    accountNumber: string;
+    bankCode: string;
+  }) {
+    console.log('in the createWalletForUser');
     const existingWallet = await this.walletRepository.findOne({
       where: { currency, user },
     });
@@ -32,11 +41,23 @@ export class WalletService {
         `A wallet with currency ${currency} already exists for this user.`,
       );
     }
+    console.log('in the else');
+
+    const transferCode = await this.createTransferRecipient(
+      bankCode,
+      user.fullName,
+      accountNumber,
+    );
+
+    console.log('user: ', user);
 
     const data = this.walletRepository.create({
       user,
       currency,
       balance: initialBalance,
+      accountNumber,
+      bankCode,
+      paystackRecipientCode: transferCode,
     });
 
     return this.walletRepository.save(data);
@@ -191,6 +212,8 @@ export class WalletService {
 
     const json = await response.json();
 
-    return json.data.recipient_code ?? null;
+    console.log('json: ', json.data);
+
+    return json.data?.recipient_code ?? null;
   }
 }

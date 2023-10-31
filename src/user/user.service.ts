@@ -28,6 +28,7 @@ export class UserService {
 
     const newUser = this.userRepository.create({
       phoneNumber: user.phoneNumber,
+      fullName: user.fullName,
       password: hashedPassword,
     });
 
@@ -53,5 +54,9 @@ export class UserService {
     }
 
     return null; // Incorrect password
+  }
+
+  async findUserById(id: number): Promise<User | null> {
+    return this.userRepository.findOne({ where: { id } });
   }
 }

@@ -7,6 +7,7 @@ import {
   Body,
   UseGuards,
   Put,
+  BadRequestException,
 } from '@nestjs/common';
 import { WalletService } from './wallet.service';
 import { AdminAuthGuard } from 'src/admin-auth/admin-auth.guard';
@@ -21,27 +22,38 @@ export class WalletController {
 
   @Post()
   @UseGuards(UserAuthGuard) // Protect this route for authenticated users
-  create(@Body() createWalletDto: CreateWalletDto) {
-    return this.walletService.createWalletForUser(
-      createWalletDto.user,
-      createWalletDto.currency,
-      createWalletDto.initialBalance,
-    );
+  async create(@Body() body: CreateWalletDto) {
+    console.log('in the create');
+    const data = await this.walletService.createWalletForUser(body);
+
+    console.log('in the created');
+    return data;
   }
   @Put('transfer/:senderId/:receiverId')
   @UseGuards(UserAuthGuard) // Protect this route for authenticated users
-  transferFunds(
+  async transferFunds(
     @Param('senderId') senderId: string,
     @Param('receiverId') receiverId: string,
     @Body() updateWalletDto: UpdateWalletDto,
     @Body() adminUser: User,
   ) {
+    const reciever = await this.walletService.findWalletById(+receiverId);
+
+    if (!reciever) {
+      throw new BadRequestException('Sender wallet not found');
+    }
+
+    if (!reciever?.paystackRecipientCode) {
+      throw new BadRequestException(
+        'Wallet not having paystack recipient code',
+      );
+    }
     return this.walletService.transferFunds(
       +senderId,
       +receiverId,
       updateWalletDto.amount,
       adminUser,
-  
+      reciever.paystackRecipientCode,
     );
   }
 
