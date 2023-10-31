@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { User } from './user/user.entity';
 import { WalletModule } from './wallet/wallet.module';
+import { Wallet } from './wallet/wallet.entity';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { WalletModule } from './wallet/wallet.module';
       username: 'postgres',
       password: 'qwerty',
       database: 'ejam_wallet',
-      entities: [User], // Make sure to include your entity classes here
+      entities: [User, Wallet], // Make sure to include your entity classes here
       synchronize: true, // Auto-create database tables (only for development)
     }),
     UserModule,

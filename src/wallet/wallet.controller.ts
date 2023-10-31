@@ -9,7 +9,10 @@ import {
 } from '@nestjs/common';
 import { WalletService } from './wallet.service';
 import { AdminAuthGuard } from 'src/admin-auth/admin-auth.guard';
+import { CreateWalletDto } from 'src/dto/create-wallet-dto';
+import { UpdateWalletDto } from 'src/dto/update-wallet.dto';
 import { UserAuthGuard } from 'src/user-auth/user-auth.guard';
+import { User } from 'src/user/user.entity';
 
 @Controller('wallet')
 export class WalletController {
@@ -18,7 +21,11 @@ export class WalletController {
   @Post()
   @UseGuards(UserAuthGuard) // Protect this route for authenticated users
   create(@Body() createWalletDto: CreateWalletDto) {
-    return this.walletService.createWalletForUser(createWalletDto);
+    return this.walletService.createWalletForUser(
+      createWalletDto.user,
+      createWalletDto.currency,
+      createWalletDto.initialBalance,
+    );
   }
 
   @Get(':id')
@@ -42,26 +49,34 @@ export class WalletController {
     @Param('senderId') senderId: string,
     @Param('receiverId') receiverId: string,
     @Body() updateWalletDto: UpdateWalletDto,
+    @Body() adminUser: User,
   ) {
     return this.walletService.transferFunds(
       +senderId,
       +receiverId,
       updateWalletDto.amount,
+      adminUser,
     );
   }
 
   @Get('approve-transfer/:senderId/:amount')
   @UseGuards(AdminAuthGuard) // Protect this route for admin users
-  approveLargeTransfer(
+  async approveLargeTransfer(
     @Param('senderId') senderId: string,
     @Param('amount') amount: string,
+    @Body() adminUser: User,
   ) {
-    return this.walletService.approveLargeTransfer(+senderId, +amount);
+    const wallet = await this.walletService.findWalletById(+senderId);
+    return this.walletService.approveLargeTransfer(wallet, +amount, adminUser);
   }
 
   @Get('monthly-payment-summaries')
   @UseGuards(AdminAuthGuard) // Protect this route for admin users
-  generateMonthlyPaymentSummaries() {
-    return this.walletService.generateMonthlyPaymentSummaries();
+  generateMonthlyPaymentSummaries(@Body() adminUser: User) {
+    if (!adminUser.isAdmin) {
+      throw new Error('Only admin users can generate payment summaries.');
+    }
+
+    return this.walletService.generateMonthlyPaymentSummaries(adminUser);
   }
 }
