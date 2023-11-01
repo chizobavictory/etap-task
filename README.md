@@ -49,6 +49,14 @@ $ npm run start:prod
 
 This project implements a REST API for a basic wallet system using NestJS, Postgres, and Paystack. It allows users to create accounts, create wallets with unique currencies, credit their wallets, transfer funds between wallets, and provides admin features such as approving large transfers and generating monthly payment summaries.
 
+## Wallet Endpoint
+
+https://chizobavictory-etap-wallet.onrender.com
+
+## API Documentation
+
+https://www.postman.com/telecoms-explorer-27073331/workspace/f85e9c18-d603-4ddc-9f13-024095ba62bf/share?collection=24035086-8946a774-a0c6-43b8-abfd-db3fb45ed06b&target=link
+
 ## Technical Requirements
 
 - **NestJS**: The API is built using NestJS, a powerful and extensible Node.js framework for building scalable and efficient server-side applications.
@@ -74,7 +82,9 @@ The API provides the following endpoints:
   - `PATCH /wallet/credit/{id}`: Credit a wallet with additional funds.
 
 - **Admin Operations**:
+
   - `GET /wallet/approve-transfer/{senderId}/{amount}`: Admin can approve large transfers.
   - `GET /wallet/monthly-payment-summaries`: Generate monthly payment summaries.
 
-## Transfer Verification with Pay
+  ## Deployment
+  The application is deployed on Render. The API endpoint is https://chizobavictory-etap-wallet.onrender.com
