@@ -45,29 +45,36 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## Test
+# Wallet System REST API
 
-```bash
-# unit tests
-$ npm run test
+This project implements a REST API for a basic wallet system using NestJS, Postgres, and Paystack. It allows users to create accounts, create wallets with unique currencies, credit their wallets, transfer funds between wallets, and provides admin features such as approving large transfers and generating monthly payment summaries.
 
-# e2e tests
-$ npm run test:e2e
+## Technical Requirements
 
-# test coverage
-$ npm run test:cov
-```
+- **NestJS**: The API is built using NestJS, a powerful and extensible Node.js framework for building scalable and efficient server-side applications.
 
-## Support
+- **Postgres**: The system uses a PostgreSQL database to store user and wallet data securely.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- **Paystack**: Integration with Paystack is implemented for fund transfers between banks and wallets, which adds an additional layer of security and authentication.
 
-## Stay in touch
+## API Endpoints
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+The API provides the following endpoints:
 
-## License
+- **User Management**:
 
-Nest is [MIT licensed](LICENSE).
+  - `POST /users/register`: Allows users to create accounts with a unique phone number and password.
+  - `POST /users/login`: Enables user authentication.
+
+- **Wallet Management**:
+
+  - `POST /wallet`: Users can create wallets with unique currencies.
+  - `PUT /wallet/transfer/{senderId}/{receiverId}`: Allows users to transfer funds between wallets.
+  - `GET /wallet/{id}`: Retrieve wallet information.
+  - `PATCH /wallet/credit/{id}`: Credit a wallet with additional funds.
+
+- **Admin Operations**:
+  - `GET /wallet/approve-transfer/{senderId}/{amount}`: Admin can approve large transfers.
+  - `GET /wallet/monthly-payment-summaries`: Generate monthly payment summaries.
+
+## Transfer Verification with Pay

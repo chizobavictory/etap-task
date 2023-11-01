@@ -7,7 +7,7 @@ import { User } from 'src/user/user.entity';
 import { Wallet } from './wallet.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import axios from 'axios';
+import fetch from 'node-fetch';
 
 @Injectable()
 export class WalletService {
@@ -118,8 +118,8 @@ export class WalletService {
       senderWallet.balance -= amount;
 
       // Paystack transfer logic goes here
-      const response = await this.paystackTransfer(
-        amount,
+      const response: any = await this.paystackTransfer(
+        amount, // Fix 1: Pass amount directly to the function
         paystackRecipientCode,
       );
 
@@ -129,6 +129,7 @@ export class WalletService {
 
       receiverWallet.balance += amount;
       await this.walletRepository.save([senderWallet, receiverWallet]); // Save the changes
+
       return [senderWallet, receiverWallet];
     } else {
       throw new BadRequestException(
@@ -182,13 +183,15 @@ export class WalletService {
       recipient: recipient,
     };
 
-    const response = await axios.post(
-      'https://api.paystack.co/transfer',
-      data,
-      { headers },
-    );
+    const response = await fetch('https://api.paystack.co/transfer', {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(data),
+    });
 
-    return response.data;
+    const res = await response.json();
+
+    return res;
   }
 
   async createTransferRecipient(
@@ -209,12 +212,14 @@ export class WalletService {
       bank_code: bankCode,
     };
 
-    const response = await axios.post(
-      'https://api.paystack.co/transferrecipient',
-      data,
-      { headers },
-    );
+    const response = await fetch('https://api.paystack.co/transferrecipient', {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(data),
+    });
 
-    return response.data.data?.recipient_code ?? null;
+    const res = await response.json();
+
+    return (res as any).data?.recipient_code ?? null;
   }
 }
