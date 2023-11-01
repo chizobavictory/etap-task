@@ -182,17 +182,13 @@ export class WalletService {
       recipient: recipient,
     };
 
-    try {
-      const response = await axios.post(
-        'https://api.paystack.co/transfer',
-        data,
-        { headers },
-      );
+    const response = await axios.post(
+      'https://api.paystack.co/transfer',
+      data,
+      { headers },
+    );
 
-      return response.data;
-    } catch (error) {
-      throw new BadRequestException(error.response.data.message);
-    }
+    return response.data;
   }
 
   async createTransferRecipient(
@@ -213,16 +209,12 @@ export class WalletService {
       bank_code: bankCode,
     };
 
-    try {
-      const response = await axios.post(
-        'https://api.paystack.co/transferrecipient',
-        data,
-        { headers },
-      );
+    const response = await axios.post(
+      'https://api.paystack.co/transferrecipient',
+      data,
+      { headers },
+    );
 
-      return response.data.data?.recipient_code ?? null;
-    } catch (error) {
-      throw new BadRequestException(error.response.data.message);
-    }
+    return response.data.data?.recipient_code ?? null;
   }
 }
