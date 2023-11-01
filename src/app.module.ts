@@ -11,7 +11,7 @@ import { Wallet } from './wallet/wallet.entity';
       type: 'postgres',
       url: 'postgres://ejam_wallet_user:9xlffWA7cuj1zOdw94b1rGHtur5MqZdH@dpg-cl108dgp2gis73aovn6g-a.oregon-postgres.render.com/ejam_wallet',
       entities: [User, Wallet],
-      synchronize: true, // Auto-create database tables (only for development)
+      synchronize: true,
       ssl: true,
     }),
     UserModule,
