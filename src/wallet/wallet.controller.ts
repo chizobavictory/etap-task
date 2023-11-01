@@ -29,13 +29,13 @@ export class WalletController {
     console.log('in the created');
     return data;
   }
+
   @Put('transfer/:senderId/:receiverId')
-  @UseGuards(UserAuthGuard) // Protect this route for authenticated users
+  @UseGuards(UserAuthGuard)
   async transferFunds(
     @Param('senderId') senderId: string,
     @Param('receiverId') receiverId: string,
     @Body() updateWalletDto: UpdateWalletDto,
-    @Body() adminUser: User,
   ) {
     const reciever = await this.walletService.findWalletById(+receiverId);
 
@@ -52,7 +52,7 @@ export class WalletController {
       +senderId,
       +receiverId,
       updateWalletDto.amount,
-      adminUser,
+      updateWalletDto.adminUser,
       reciever.paystackRecipientCode,
     );
   }

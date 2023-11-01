@@ -110,7 +110,7 @@ export class WalletService {
     const status = false;
 
     if (amount > 1000000 && !status) {
-      throw new Error('Large transfers require admin approval.');
+      throw new BadRequestException('Large transfers require admin approval.');
     }
 
     if (senderWallet.balance >= amount) {
