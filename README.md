@@ -55,7 +55,7 @@ https://chizobavictory-etap-wallet.onrender.com
 
 ## API Documentation
 
-https://www.postman.com/telecoms-explorer-27073331/workspace/f85e9c18-d603-4ddc-9f13-024095ba62bf/share?collection=24035086-8946a774-a0c6-43b8-abfd-db3fb45ed06b&target=link
+https://elements.getpostman.com/redirect?entityId=24035086-8946a774-a0c6-43b8-abfd-db3fb45ed06b&entityType=collection
 
 ## Technical Requirements
 
