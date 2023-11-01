@@ -4,14 +4,13 @@ import { ExceptionsFilter } from './exceptions/exceptions.filter';
 import { ValidationPipe } from '@nestjs/common';
 import * as dotenv from 'dotenv';
 
-// Load environment variables from .env file
 dotenv.config();
 
 const PORT = process.env.PORT;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.useGlobalFilters(new ExceptionsFilter()); // Add this line
+  app.useGlobalFilters(new ExceptionsFilter());
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -19,7 +18,7 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
       transform: true,
     }),
-  ); // Add this line
+  );
 
   await app.listen(PORT);
 }

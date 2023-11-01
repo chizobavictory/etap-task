@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm'; // Import TypeOrmModule
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { User } from './user/user.entity';
 import { WalletModule } from './wallet/wallet.module';
@@ -10,19 +8,16 @@ import { Wallet } from './wallet/wallet.entity';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: 'postgres', // or the appropriate database type
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: 'qwerty',
-      database: 'ejam_wallet',
-      entities: [User, Wallet], // Make sure to include your entity classes here
+      type: 'postgres',
+      url: 'postgres://ejam_wallet_user:9xlffWA7cuj1zOdw94b1rGHtur5MqZdH@dpg-cl108dgp2gis73aovn6g-a.oregon-postgres.render.com/ejam_wallet',
+      entities: [User, Wallet],
       synchronize: true, // Auto-create database tables (only for development)
+      ssl: true,
     }),
     UserModule,
     WalletModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
