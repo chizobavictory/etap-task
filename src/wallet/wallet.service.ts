@@ -7,6 +7,7 @@ import { User } from 'src/user/user.entity';
 import { Wallet } from './wallet.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import axios from 'axios';
 
 @Injectable()
 export class WalletService {
@@ -169,7 +170,7 @@ export class WalletService {
   }
 
   async paystackTransfer(amount: number, recipient: string) {
-    // Paystack transfer logic goes here
+    // Paystack transfer logic using axios
     const headers = {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
@@ -181,15 +182,17 @@ export class WalletService {
       recipient: recipient,
     };
 
-    const response = await fetch('https://api.paystack.co/transfer', {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify(data),
-    });
+    try {
+      const response = await axios.post(
+        'https://api.paystack.co/transfer',
+        data,
+        { headers },
+      );
 
-    const json = await response.json();
-
-    return json;
+      return response.data;
+    } catch (error) {
+      throw new BadRequestException(error.response.data.message);
+    }
   }
 
   async createTransferRecipient(
@@ -198,7 +201,6 @@ export class WalletService {
     account_number: string,
   ): Promise<string> {
     // Create a transfer recipient using the Paystack transfer recipient API
-
     const headers = {
       Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
       'Content-Type': 'application/json',
@@ -211,16 +213,16 @@ export class WalletService {
       bank_code: bankCode,
     };
 
-    const response = await fetch('https://api.paystack.co/transferrecipient', {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(data),
-    });
+    try {
+      const response = await axios.post(
+        'https://api.paystack.co/transferrecipient',
+        data,
+        { headers },
+      );
 
-    const json = await response.json();
-
-    console.log('json: ', json.data);
-
-    return json.data?.recipient_code ?? null;
+      return response.data.data?.recipient_code ?? null;
+    } catch (error) {
+      throw new BadRequestException(error.response.data.message);
+    }
   }
 }
