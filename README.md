@@ -65,6 +65,19 @@ https://www.postman.com/telecoms-explorer-27073331/workspace/f85e9c18-d603-4ddc-
 
 - **Paystack**: Integration with Paystack is implemented for fund transfers between banks and wallets, which adds an additional layer of security and authentication.
 
+- **TypeORM**: The application uses TypeORM, an ORM that can run in NodeJS, to interact with the database.
+
+- **Postman**: The API is documented using Postman, which provides a user-friendly interface for testing the API.
+
+## Paystack Design
+To implement the functionality of transferring between accounts, paystack API needs the amount and the recipient code.
+
+To get the recipient code, another paystack API is called to generate the recipient code taking in the bank code, fullname and account number you are transferring from. 
+
+When the recipient code is generated, it is stored in the database and used to verify the transfer.
+
+As a result of these constraints I added fullname to the user object while creating a user and also added bank code and account number to the wallet object while creating a wallet.
+
 ## API Endpoints
 
 The API provides the following endpoints:
