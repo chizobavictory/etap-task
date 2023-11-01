@@ -1,5 +1,5 @@
 // user.controller.ts
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Param } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from 'src/dto/create-user-dto';
 
@@ -22,5 +22,10 @@ export class UserController {
     } else {
       return { message: 'Authentication failed' };
     }
+  }
+
+  @Post('create-admin/:userId')
+  async createAdmin(@Param('userId') userId: number) {
+    return this.userService.makeUserAdmin(userId);
   }
 }

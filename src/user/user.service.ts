@@ -1,5 +1,9 @@
 // user.service.ts
-import { Injectable, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
@@ -58,5 +62,16 @@ export class UserService {
 
   async findUserById(id: number): Promise<User | null> {
     return this.userRepository.findOne({ where: { id } });
+  }
+
+  async makeUserAdmin(userId: number): Promise<User> {
+    const user = await this.findUserById(userId);
+
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
+
+    user.isAdmin = true; // Set the user as an admin
+    return this.userRepository.save(user);
   }
 }
